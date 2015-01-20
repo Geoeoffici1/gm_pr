@@ -6,25 +6,25 @@ from gm_pr.PrFetcher import PrFetcher
 from gm_pr.celery import app
 
 @app.task
-def slack(url, org, weburl, project, slack, channel):
+def slack(url, org, weburl, repos, slack, project, channel):
     """ Celery task, use github api and send result to slack
     """
-    prf = PrFetcher(url, org, project)
-    project_list = prf.get_prs()
-    nb_proj = len(project_list)
+    prf = PrFetcher(url, org, repos)
+    repo_list = prf.get_prs()
+    nb_repo = len(repo_list)
     total_pr = 0
-    for proj in project_list:
-        nb_pr = len(proj['pr_list'])
+    for repo in repo_list:
+        nb_pr = len(repo['pr_list'])
         total_pr += nb_pr
 
-    txt = """Hey, we have %d PR in %d project(s) (<%s|web version>)
-""" % (total_pr, nb_proj, weburl)
+    txt = """Hey, we have %d PR in %d repo(s) for project *%s* (<%s|web version>)
+""" % (total_pr, nb_repo, project, weburl)
 
     if total_pr > 0:
         txt += "\n"
-        for proj in project_list:
-            txt += "*%s*\n" % proj['name']
-            for pr in proj['pr_list']:
+        for repo in repo_list:
+            txt += "*%s*\n" % repo['name']
+            for pr in repo['pr_list']:
                 txt += "<%s|%s> -" % (pr.url, pr.title)
                 if pr.milestone:
                     txt += " *%s* -" % (pr.milestone)
