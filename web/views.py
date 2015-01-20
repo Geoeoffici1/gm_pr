@@ -12,13 +12,13 @@ def index(request):
         context = {'project_list' : settings.PROJECTS_CHAN.keys()}
         return render(request, 'index.html', context)
 
-    projects, channel = chan_proj.chan_proj(request)
+    repos, project, channel = chan_proj.chan_proj(request)
 
-    if projects != None:
+    if repos != None:
         before = time.time()
 
-        prf = PrFetcher(settings.TOP_LEVEL_URL, settings.ORG, projects)
-        context = {"project_list" : prf.get_prs()}
+        prf = PrFetcher(settings.TOP_LEVEL_URL, settings.ORG, repos)
+        context = {"repo_list" : prf.get_prs()}
 
         after = time.time()
         print(after - before)

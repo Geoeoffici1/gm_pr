@@ -2,10 +2,10 @@
 {% block content %}
 <h1>Current PR</h1>
 
-{% for project in project_list %}
-<h2>{{project.name}}</h2>
+{% for repo in repo_list %}
+<h2>{{repo.name}}</h2>
 <ul>
-{% for pr in project.pr_list %}
+{% for pr in repo.pr_list %}
     <li>
         {% if pr.milestone %}
             <span class="milestone">{{pr.milestone}}</span> |
