@@ -17,6 +17,11 @@ th {
   padding-left: 2px;
   padding-right: 2px;
 }
+th img {
+  height: 26px;
+  padding: 2px;
+  display: block;
+}
 tr:nth-child(even) {
   background: #ffffff;
 }

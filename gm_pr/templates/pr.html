@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load humanize %}
+{% load staticfiles %}
 {% block content %}
 
 {% for project in project_list %}
@@ -14,9 +15,9 @@
                 <th>Title</th>
                 <th>User</th>
                 <th>Reviews</th>
-                <th>{{feedback_ok}}</th>
-                <th>{{feedback_weak}}</th>
-                <th>{{feedback_ko}}</th>
+                <th><img src = "{% static 'feedback_ok.png' %}" alt="{{feedback_ok}}"></th>
+                <th><img src = "{% static 'feedback_weak.png' %}" alt="{{feedback_weak}}"></th>
+                <th><img src = "{% static 'feedback_ko.png' %}" alt="{{feedback_ko}}"></th>
             </tr>
         {% for pr in project.pr_list %}
             <tr class="pr">
