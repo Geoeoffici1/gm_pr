@@ -14,19 +14,27 @@
 # limitations under the License.
 
 from django.http import HttpResponse
-from gm_pr import settings, proj_repo
+
+from common import proj_repo
 from bot import tasks, slackauth
+from web.models import GeneralSettings
+
 
 @slackauth.isFromSlack
 def index(request):
     project, repos = proj_repo.proj_repo(request)
-    if repos != None:
-        tasks.slack.delay(settings.TOP_LEVEL_URL,
-                          settings.ORG,
-                          "%s?project=%s" % (settings.WEB_URL, project),
-                          repos,
-                          settings.SLACK_URL,
-                          "#%s" % project)
-        return HttpResponse("One moment, Octocat is considering your request\n")
+    general_settings = GeneralSettings.objects.first()
+
+    if not general_settings:
+        return HttpResponse("No configuration found\n", status=404)
+
+    if repos:
+        tasks.slack(general_settings.top_level_url,
+                    general_settings.organization,
+                    "%s?project=%s" % (general_settings.web_url, project),
+                    repos,
+                    general_settings.slack_settings.slack_url,
+                    "#%s" % project)
+        return HttpResponse("Octocat thank you for your business\n")
     else:
         return HttpResponse("No projects found\n", status=404)

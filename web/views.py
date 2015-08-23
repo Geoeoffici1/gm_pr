@@ -16,29 +16,49 @@
 # Create your views here.
 
 
-from django.shortcuts import render
-from django.http import HttpResponse
-from gm_pr import settings, proj_repo
-from gm_pr.prfetcher import PrFetcher
 import time
 
+from django.shortcuts import render
+
+from django.http import HttpResponse
+
+from common import proj_repo
+from common.prfetcher import PrFetcher
+from web.models import ProjectRepository, GeneralSettings, FeedbackGithub, LabelGithub
+
+
 def index(request):
+    general_settings = GeneralSettings.objects.first()
+
+    if not general_settings:
+        return HttpResponse("No configurations found\n", status=404)
+
     if not request.GET:
+        project_list = ProjectRepository.objects.filter(parent=None, general_settings=general_settings)
         context = {'title': "Project list",
-                   'project_list' : settings.PROJECTS_REPOS.keys()}
+                   'project_list': project_list}
         return render(request, 'index.html', context)
 
     project, repos = proj_repo.proj_repo(request)
 
-    if repos != None:
+    if repos:
         before = time.time()
+        feedback_ok = FeedbackGithub.objects.filter(general_settings=general_settings, type="ok").first()
+        feedback_weak = FeedbackGithub.objects.filter(general_settings=general_settings, type="weak").first()
+        feedback_ko = FeedbackGithub.objects.filter(general_settings=general_settings, type="ko").first()
+        label_github = LabelGithub.objects.filter(general_settings=general_settings)
 
-        prf = PrFetcher(settings.TOP_LEVEL_URL, settings.ORG, repos)
+        prf = PrFetcher(general_settings.top_level_url, general_settings.organization,
+                        #general_settings.old_period, label_github,
+                        #feedback_ok.keyword,
+                        #feedback_weak.keyword,
+                        #feedback_ko.keyword,
+                        repos)
         context = {"title" : "%s PR list" % project,
-                   "project_list" : prf.get_prs(),
-                   "feedback_ok" : settings.FEEDBACK_OK['name'],
-                   "feedback_weak" : settings.FEEDBACK_WEAK['name'],
-                   "feedback_ko" : settings.FEEDBACK_KO['name']}
+                   "projects" : prf.get_prs(),
+                   "feedback_ok" : feedback_ok.name,
+                   "feedback_weak" : feedback_weak.name,
+                   "feedback_ko" : feedback_ko.name}
 
         after = time.time()
         print(after - before)

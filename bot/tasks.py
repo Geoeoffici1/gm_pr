@@ -17,20 +17,24 @@ from __future__ import absolute_import
 
 import json
 import urllib.request
-from gm_pr.prfetcher import PrFetcher
-from gm_pr.celery import app
-from gm_pr import settings
 
-@app.task
+from common.prfetcher import PrFetcher
+from gm_pr.celery import app
+
+#FIXME: broken, need to use db now, hack to let it compile
+#from gm_pr import settings_projects
+settings_projects = []
+
+#@app.task
 def slack(url, org, weburl, repos, slackurl, channel):
     """ Celery task, use github api and send result to slack
     """
     prf = PrFetcher(url, org, repos)
-    project_list = prf.get_prs()
-    nb_proj = len(project_list)
+    projects = prf.get_prs()
+    nb_proj = len(projects)
     total_pr = 0
-    for proj in project_list:
-        nb_pr = len(proj['pr_list'])
+    for name in projects:
+        nb_pr = len(projects[name])
         total_pr += nb_pr
 
     txt = """Hey, we have %d PR in %d project(s) (<%s|web version>)
@@ -38,20 +42,21 @@ def slack(url, org, weburl, repos, slackurl, channel):
 
     if total_pr > 0:
         txt += "\n"
-        for proj in project_list:
-            txt += "*%s*\n" % proj['name']
-            for pr in proj['pr_list']:
+        for name in projects:
+            txt += "*%s*\n" % name
+            for pr in projects[name]:
                 txt += "<%s|%s> -" % (pr.url, pr.title)
                 if pr.milestone:
                     txt += " *%s* -" % (pr.milestone)
                 for label in pr.labels:
                     txt += " *%s* -" % (label['name'])
-                txt += " %s review:%d %s:%d %s:%d %s:%d\n" % \
+                txt += " %s review:%d %s:%d %s:%d" % \
                        (pr.user, pr.nbreview,
-                        settings.FEEDBACK_OK['keyword'], pr.feedback_ok,
-                        settings.FEEDBACK_WEAK['keyword'], pr.feedback_weak,
-                        settings.FEEDBACK_KO['keyword'], pr.feedback_ko)
-
+                        settings_projects.FEEDBACK_OK['keyword'], pr.feedback_ok,
+                        settings_projects.FEEDBACK_WEAK['keyword'], pr.feedback_weak)
+                if pr.feedback_ko > 0:
+                    txt += " %s" % (settings_projects.FEEDBACK_KO['keyword'])
+                txt += "\n"
 
     payload = {"channel": channel,
                "username": "genypr",
