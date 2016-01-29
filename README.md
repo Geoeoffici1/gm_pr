@@ -24,6 +24,12 @@ docker build -t gm_pr .
 docker run -v /path/to/gm_pr:/var/www/gm_pr --name gm_pr -p 8000:80 -d gm_pr
 ```
 
+Optionally, you may specify some projects and repositories to be created,
+by using this `docker run` command instead:
+```
+docker run -e GM_PR_INITIAL_PROJECTS="proj1=repo1,repo2;proj2=repo3,repo4" -v /path/to/gm_pr:/var/www/gm_pr --name gm_pr -p 8000:80 -d gm_pr
+```
+
 Now, you can simply point your browser to http://localhost:8000.
 
 If you want to make gm_pr available on your external interface, configure a
@@ -48,7 +54,7 @@ ProxyPassReverse /gm_pr http://localhost:8000
 2 files are used for configuration:
 
  * gm_pr/settings.py: this is the standard Django configuration file
- * gm_pr/settings_projects.py: contains everything related to your projects
+ * gm_pr/settings_projects.py: configure your Github and Slack organization and authentication here.
 
 ### Django configuration
 
