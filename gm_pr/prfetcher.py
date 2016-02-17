@@ -29,9 +29,7 @@ class PullRequest:
     """ Simple class wrapper for PullRequest properties
     """
     def __init__(self, url="", title="", updated_at="", user="", my_open_comment_count=0, last_activity=None,
-                 repo="", nbreview=0, feedback_ok=0, feedback_weak=0,
-                 feedback_ko=0, milestone=None, labels=None,
-                 is_old=False):
+                 repo="", nbreview=0, feedback_ok=0, feedback_ko=0, milestone=None, labels=None, is_old=False):
         self.url = url
         self.title = title
         self.updated_at = updated_at
@@ -41,7 +39,6 @@ class PullRequest:
         self.repo = repo
         self.nbreview = nbreview
         self.feedback_ok = feedback_ok
-        self.feedback_weak = feedback_weak
         self.feedback_ko = feedback_ko
         self.milestone = milestone
         self.labels = labels
@@ -74,7 +71,6 @@ def parse_githubdata(data, current_user):
 
     now = timezone.now()
     feedback_ok = 0
-    feedback_weak = 0
     feedback_ko = 0
     milestone = data['json']['milestone']
     labels = list()
@@ -118,8 +114,6 @@ def parse_githubdata(data, current_user):
             last_activity = practivity.get_latest_activity(last_activity, comment_activity)
         if re.search(settings.FEEDBACK_OK['keyword'], body):
             feedback_ok += 1
-        if re.search(settings.FEEDBACK_WEAK['keyword'], body):
-            feedback_weak += 1
         if re.search(settings.FEEDBACK_KO['keyword'], body):
             feedback_ko += 1
     if milestone:
@@ -136,7 +130,6 @@ def parse_githubdata(data, current_user):
                          nbreview=int(data['detail']['comments']) +
                                   int(data['detail']['review_comments']),
                          feedback_ok=feedback_ok,
-                         feedback_weak=feedback_weak,
                          feedback_ko=feedback_ko,
                          milestone=milestone,
                          labels=labels,
