@@ -61,5 +61,4 @@ OLD_LABELS = ("Needs Reviews", None)
 # keyword is the text to search for in the github comments, name is the web
 # page column heading
 FEEDBACK_OK = {"keyword": "LGTM", "name" : "LGTM"}
-FEEDBACK_WEAK = {"keyword" : ":hand:", "name" : "&#9995;"}
 FEEDBACK_KO = {"keyword": ":x:", "name" :"&#10007;"}

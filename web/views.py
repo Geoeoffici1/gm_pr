@@ -46,7 +46,6 @@ def index(request):
         context = {"title" : project,
                    "projects" : prf.get_prs(),
                    "feedback_ok" : settings.FEEDBACK_OK['name'],
-                   "feedback_weak" : settings.FEEDBACK_WEAK['name'],
                    "feedback_ko" : settings.FEEDBACK_KO['name']}
 
         after = time.time()
