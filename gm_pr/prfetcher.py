@@ -282,6 +282,8 @@ class PrFetcher:
 
         prlist = [ parse_githubdata(github_data[prid], self.__current_user)
                    for prid in github_data ]
+
+        prlist = sorted(prlist, key = lambda x: x.updated_at, reverse = True)
         repo_pr = {}
         for pr in prlist:
             if pr.repo not in repo_pr:
