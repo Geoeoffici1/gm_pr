@@ -108,6 +108,9 @@ few seconds the list of pull requests should appear in your channel.
 
 ## Hacking
 
+**Requirements**: python3 <3.6
+> this project is currently not compatible with python >3.6
+
 You need to install Django for Python 3, Celery and RabbitMQ.
 
 Here is the command line for macOS, using Homebrew:
@@ -138,13 +141,13 @@ sudo rabbitmqctl set_permissions -p gm_pr gm_pr ".*" ".*" ".*"
 
 Run the following commands to start the server:
 ```
-python3 manage.py migrate
-env GM_PR_ORG=MyOrg GM_PR_ALLOWED_HOSTS="10.0.0.2,10.0.0.3" python3 manage.py runserver
+env GM_PR_GITHUB_OAUTHTOKEN=xxxx GM_PR_ORG=MyOrg GM_PR_ALLOWED_HOSTS="10.0.0.2,10.0.0.3" python3 manage.py migrate
+env GM_PR_GITHUB_OAUTHTOKEN=xxxx GM_PR_ORG=MyOrg GM_PR_ALLOWED_HOSTS="10.0.0.2,10.0.0.3" python3 manage.py runserver
 ```
 
 Run the following command in a new terminal:
 ```
-env GM_PR_GITHUB_OAUTHTOKEN=xxxx python3 manage.py celeryd
+env GM_PR_GITHUB_OAUTHTOKEN=xxxx GM_PR_ORG=MyOrg GM_PR_ALLOWED_HOSTS="10.0.0.2,10.0.0.3" python3 manage.py celeryd
 ```
 
 Open the web page at http://localhost:8000
