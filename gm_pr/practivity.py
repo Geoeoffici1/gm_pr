@@ -1,5 +1,5 @@
 #
-# Copyright 2015 Genymobile
+# Copyright 2019 Genymobile
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -70,5 +70,3 @@ def get_latest_activity(activity1, activity2):
     if activity1 is None: return activity2
     if activity1 > activity2: return activity1
     return activity2
-
-
